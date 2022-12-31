@@ -95,15 +95,15 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  int8_t mouseBuffer[4] = {0};
+  int8_t mouseBuffer[5] = {2, 0};
   while (1)
   {
 	  HAL_Delay(100);
 	  HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
 	  if(HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == GPIO_PIN_SET)
 	  {
-		  mouseBuffer[3] = rand() % 21 - 10;
-		  USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*)mouseBuffer, 4);
+		  mouseBuffer[4] = rand() % 5 - 2;
+		  USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*)mouseBuffer, 5);
 	  }
 
     /* USER CODE END WHILE */
