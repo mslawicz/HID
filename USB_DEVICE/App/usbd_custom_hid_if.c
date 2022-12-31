@@ -124,7 +124,7 @@ extern USBD_HandleTypeDef hUsbDeviceFS;
 
 static int8_t CUSTOM_HID_Init_FS(void);
 static int8_t CUSTOM_HID_DeInit_FS(void);
-static int8_t CUSTOM_HID_OutEvent_FS(uint8_t* pData);
+static int8_t CUSTOM_HID_OutEvent_FS(uint8_t event_idx, uint8_t state);
 
 /**
   * @}
@@ -173,10 +173,11 @@ static int8_t CUSTOM_HID_DeInit_FS(void)
   * @param  state: Event state
   * @retval USBD_OK if all operations are OK else USBD_FAIL
   */
-static int8_t CUSTOM_HID_OutEvent_FS(uint8_t* pData)
+static int8_t CUSTOM_HID_OutEvent_FS(uint8_t event_idx, uint8_t state)
 {
   /* USER CODE BEGIN 6 */
-  UNUSED(pData);
+  UNUSED(event_idx);
+  UNUSED(state);
 
   /* Start next USB packet transfer once data processing is completed */
   if (USBD_CUSTOM_HID_ReceivePacket(&hUsbDeviceFS) != (uint8_t)USBD_OK)
