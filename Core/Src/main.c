@@ -95,7 +95,8 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  int8_t keyboardBuffer[9] = {1, 0};
+  uint8_t keyboardBuffer[9] = {1, 0};
+  int8_t mouseBuffer[5] = {2, 0};
   uint8_t isPressed = 0;
   while (1)
   {
@@ -104,14 +105,19 @@ int main(void)
 	  if((HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == GPIO_PIN_SET) && (isPressed == 0))
 	  {
 		  keyboardBuffer[4] = 4; //key 'A'
-		  USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*)keyboardBuffer, 9);
+		  USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, keyboardBuffer, 9);
 		  isPressed = 1;
 	  }
 	  if((HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == GPIO_PIN_RESET) && (isPressed != 0))
 	  {
 		  keyboardBuffer[4] = 0; //key released
-		  USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*)keyboardBuffer, 9);
+		  USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, keyboardBuffer, 9);
 		  isPressed = 0;
+	  }
+	  if(HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == GPIO_PIN_SET)
+	  {
+		  mouseBuffer[4] = rand() % 3 - 1;	//scroll wheel value
+		  USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*)mouseBuffer, 5);
 	  }
 
     /* USER CODE END WHILE */
