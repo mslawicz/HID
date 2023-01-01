@@ -97,18 +97,20 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   uint8_t keyboardBuffer[9] = {1, 0};
   int8_t mouseBuffer[5] = {2, 0};
+  uint8_t joystickBuffer[22] = {3, 0};
   uint8_t isPressed = 0;
+  uint8_t repId = 0;
   while (1)
   {
 	  HAL_Delay(100);
 	  HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-	  if((HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == GPIO_PIN_SET) && (isPressed == 0))
+	  if((HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == GPIO_PIN_SET) && (isPressed == 0) && (repId == 0))
 	  {
 		  keyboardBuffer[4] = 4; //key 'A'
 		  USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, keyboardBuffer, 9);
 		  isPressed = 1;
 	  }
-	  if((HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == GPIO_PIN_RESET) && (isPressed != 0))
+	  if((HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == GPIO_PIN_RESET) && (isPressed != 0) && (repId == 0))
 	  {
 		  keyboardBuffer[4] = 0; //key released
 		  USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, keyboardBuffer, 9);
@@ -116,8 +118,32 @@ int main(void)
 	  }
 	  if(HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == GPIO_PIN_SET)
 	  {
-		  mouseBuffer[4] = rand() % 3 - 1;	//scroll wheel value
-		  USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*)mouseBuffer, 5);
+		  if(repId == 1)
+		  {
+			  mouseBuffer[4] = rand() % 3 - 1;	//scroll wheel value
+			  USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*)mouseBuffer, 5);
+		  }
+
+		  if(repId == 2)
+		  {
+			  uint8_t val = rand() % 0xFE;
+			  joystickBuffer[2] =
+			  joystickBuffer[4] =
+			  joystickBuffer[6] =
+			  joystickBuffer[8] = val;
+			  joystickBuffer[10] =
+			  joystickBuffer[12] =
+			  joystickBuffer[14] =
+			  joystickBuffer[16] = val >> 1;
+			  joystickBuffer[17] = val % 9;
+			  joystickBuffer[18] =
+			  joystickBuffer[19] =
+			  joystickBuffer[20] =
+			  joystickBuffer[21] =val;
+			  USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, joystickBuffer, 22);
+		  }
+
+		  repId = (repId + 1) % 3;
 	  }
 
     /* USER CODE END WHILE */
