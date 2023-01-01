@@ -95,15 +95,23 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  int8_t mouseBuffer[5] = {2, 0};
+  int8_t keyboardBuffer[9] = {1, 0};
+  uint8_t isPressed = 0;
   while (1)
   {
 	  HAL_Delay(100);
 	  HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-	  if(HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == GPIO_PIN_SET)
+	  if((HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == GPIO_PIN_SET) && (isPressed == 0))
 	  {
-		  mouseBuffer[4] = rand() % 5 - 2;
-		  USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*)mouseBuffer, 5);
+		  keyboardBuffer[4] = 4; //key 'A'
+		  USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*)keyboardBuffer, 9);
+		  isPressed = 1;
+	  }
+	  if((HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == GPIO_PIN_RESET) && (isPressed != 0))
+	  {
+		  keyboardBuffer[4] = 0; //key released
+		  USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*)keyboardBuffer, 9);
+		  isPressed = 0;
 	  }
 
     /* USER CODE END WHILE */
